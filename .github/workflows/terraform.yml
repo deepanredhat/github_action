@@ -34,7 +34,7 @@ jobs:
         id: apply
         run:  |
           cd tf-example/
-          terraform init
+          terraform init -backend-config="profile=${{ secrets.AWS_PROFILE }}"
           terraform validate
           terraform plan
           terraform apply  -auto-approve
