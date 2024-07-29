@@ -35,11 +35,5 @@ jobs:
           terraform validate
           terraform plan
           terraform apply  -auto-approve
-      - name: Sync S3
-        uses: jakejarvis/s3-sync-action@master
-        env:
-          AWS_S3_BUCKET: '[rgas-dev-red-sun]'
-          aws-access-key-id: '${{ secrets.TF_USER_AWS_KEY }}'
-          aws-secret-access-key: '${{ secrets.TF_USER_AWS_SECRET }}'
 
 

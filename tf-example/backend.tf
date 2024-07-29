@@ -5,7 +5,7 @@ terraform {
     dynamodb_table = "dynamo-terraform-state-lock"
     key            = "terraform.tfstate"
     region         = "us-east-1"
-    profile        = "dev"
+    profile        = ${{ dev }}
 
   }
 }
