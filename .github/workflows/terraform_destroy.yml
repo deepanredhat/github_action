@@ -31,6 +31,6 @@ jobs:
           cd tf-example/
           RETRIES=5
           for i in $(seq 1 $RETRIES); do
-            terraform init -backend-config="profile=$GITHUB_ENV"
+            terraform init -backend-config="profile=${{ secrets.AWS_PROFILE }}"
           done
           terraform destroy -auto-approve
