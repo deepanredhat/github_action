@@ -9,13 +9,13 @@ permissions:
   contents: read
 
 jobs:
-  provision-ec2:
+  Provision-ec2:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '14'
+          node-version: '16'
       - name: configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:

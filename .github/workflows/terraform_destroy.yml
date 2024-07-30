@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  provision-ec2:
+  Destroy-ec2:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -31,6 +31,6 @@ jobs:
           cd tf-example/
           RETRIES=5
           for i in $(seq 1 $RETRIES); do
-            terraform init -backend-config="profile=${{ secrets.AWS_PROFILE }}"
+            terraform init -backend-config="profile=$GITHUB_ENV"
           done
           terraform destroy -auto-approve
