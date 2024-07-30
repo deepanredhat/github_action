@@ -33,4 +33,4 @@ jobs:
           for i in $(seq 1 $RETRIES); do
             terraform init -backend-config="profile=${{ secrets.AWS_PROFILE }}"
           done
-          terraform destroy  -auto-approve
+          terraform destroy -var-file terraform.tfvars -auto-approve
