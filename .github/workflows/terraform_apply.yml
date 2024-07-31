@@ -2,28 +2,29 @@ name: Terraform Apply
 
 on:
   push:
-    branches: [ "main" ]
+    branches: 
+      - main
   pull_request:
 
 permissions:
-  contents: read
+ contents: read
 
 jobs:
   terraform_apply:
     runs-on: ubuntu-latest
-    if: contains(github.event.head_commit.message, '[destroy]')
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
-      - name: Set color
-        id: color-selector
-        run: echo "SELECTED_COLOR=green" >> "$GITHUB_OUTPUT"
-      - name: Get color
-        env:
-          SELECTED_COLOR: ${{ steps.color-selector.outputs.SELECTED_COLOR }}
-        run: echo "The selected color is $SELECTED_COLOR"
+      - name: Check commit message for destroy keyword
+        id: check_message
+        run: |
+            if [[ "${{ github.event.head_commit.message }}" == *"[destroy]"* ]]; then
+              echo "destroy=true" >> $GITHUB_ENV
+            else
+              echo "destroy=false" >> $GITHUB_ENV
+            fi
 
       - name: configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -33,11 +34,13 @@ jobs:
           aws-region: eu-west-2
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
+        if: env.destroy == 'false'
         with:
           terraform_wrapper: false
       - name: Set environment variables
         run: |
           echo "AWS_PROFILE=${{ secrets.AWS_PROFILE }}" >> $GITHUB_ENV
+        if: env.destroy == 'false'
 
       - name: Terraform Apply
         id: apply
@@ -50,5 +53,6 @@ jobs:
           terraform validate
           terraform plan
           terraform apply -auto-approve
+        if: env.destroy == 'false'
 
 

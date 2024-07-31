@@ -2,7 +2,8 @@ name: Terraform Destroy
 
 on:
   push:
-    branches: [ "main" ]
+    branches: 
+      - main
   pull_request:
 
 permissions:
@@ -17,6 +18,14 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
+      - name: Check commit message for destroy keyword
+        id: check_message
+        run: |
+              if [[ "${{ github.event.head_commit.message }}" == *"[destroy]"* ]]; then
+                echo "destroy=true" >> $GITHUB_ENV
+              else
+                echo "destroy=false" >> $GITHUB_ENV
+              fi
       - name: configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -25,11 +34,13 @@ jobs:
           aws-region: eu-west-2
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
+        if: env.destroy == 'true'
         with:
           terraform_wrapper: false
       - name: Set environment variables
         run: |
           echo "AWS_PROFILE=${{ secrets.AWS_PROFILE }}" >> $GITHUB_ENV
+        if: env.destroy == 'true'
 
       - name: Terraform Apply
         id: apply
@@ -40,3 +51,4 @@ jobs:
             terraform init -backend-config="profile=${{ secrets.AWS_PROFILE }}"
           done
           terraform destroy -auto-approve
+        if: env.destroy == 'true'
