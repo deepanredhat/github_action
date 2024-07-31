@@ -1,4 +1,4 @@
-name: Provision ec2
+name: Terraform Apply
 
 on:
   push:
@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 jobs:
-  Provision-ec2:
+  terraform_apply:
     runs-on: ubuntu-latest
     if: contains(github.event.head_commit.message, '[destroy]')
     steps:
