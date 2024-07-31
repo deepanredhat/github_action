@@ -1,4 +1,4 @@
-name: Destroy ec2
+name: Provision ec2
 
 on:
   push:
@@ -8,16 +8,22 @@ on:
 permissions:
   contents: read
 
-
 jobs:
-  Destroy-ec2:
-    if: "!contains(github.event.head_commit.message, '[destroy]')"  # Only run if the commit message does not contain [destroy]
+  Provision-ec2:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
+      - name: Set color
+        id: color-selector
+        run: echo "SELECTED_COLOR=green" >> "$GITHUB_OUTPUT"
+      - name: Get color
+        env:
+          SELECTED_COLOR: ${{ steps.color-selector.outputs.SELECTED_COLOR }}
+        run: echo "The selected color is $SELECTED_COLOR"
+
       - name: configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -40,4 +46,8 @@ jobs:
           for i in $(seq 1 $RETRIES); do
             terraform init -backend-config="profile=${{ secrets.AWS_PROFILE }}"
           done
-          terraform destroy -auto-approve
+          terraform validate
+          terraform plan
+          terraform apply -auto-approve
+
+
