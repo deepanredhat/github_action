@@ -10,7 +10,6 @@ permissions:
 
 jobs:
   Provision-ec2:
-    if: "!contains(github.event.head_commit.message, '[destroy]')"  # Only run if the commit message does not contain [destroy]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
